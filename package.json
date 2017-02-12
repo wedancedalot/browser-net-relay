@@ -1,0 +1,31 @@
+{
+  "name": "browser-net-relay",
+  "version": "0.0.1",
+  "description": "Work with http/tcp/udp protocols directly from your browser via WS and a small nodejs script",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wedancedalot/browser-net-relay.git"
+  },
+  "keywords": [
+    "http",
+    "tcp",
+    "udp",
+    "relay"
+  ],
+  "author": "wedancedalot",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/wedancedalot/browser-net-relay/issues"
+  },
+  "homepage": "https://github.com/wedancedalot/browser-net-relay#readme",
+  "dependencies": {
+    "ws": "^2.0.3"
+  },
+  "devDependencies": {
+    "browserify": "^14.0.0"
+  }
+}
