@@ -1,45 +1,43 @@
-let http = require('http');
+let request = require('request');
 
-// http.get(data.params.url, (res) => {
-                //     // res.setEncoding('utf8');
+module.exports = class {
+    constructor(connection) {
+        this.connection = connection
+    }
 
-                //     let rawData = '';
-                //     res.on('data', (chunk) => {
-                //         rawData += chunk
-                //     });
+    get(id, url) {
+        var self = this;
 
-                //     res.on('end', () => {
-                //         msg.data = rawData;
-                //         conn.send(JSON.stringify(msg));
-                //     });
-                // }).on('error', (e) => {
-                //     msg.error = e;
-                //     conn.send(JSON.strigify(msg));
-                // });
+        request(url, function (err, resp, body) {
+            self.sendResponse(id, err, resp, body);
+        })
+    }
 
-                // var options = {
-                //   hostname: data.params.url
-                //   port: 80,
-                //   path: '/catchers/544b09b4599c1d0200000289',
-                //   method: 'POST',
-                //   // headers: {
-                //   //     'Content-Type': 'application/json',
-                //   // }
-                // };
+    post(id, url, data) {
+        var self = this;
 
-                // var req = http.request(options, function(res) {
-                //   console.log('Status: ' + res.statusCode);
-                //   console.log('Headers: ' + JSON.stringify(res.headers));
-                //   res.setEncoding('utf8');
-                //   res.on('data', function (body) {
-                //     console.log('Body: ' + body);
-                //   });
-                // });
+        request.post({
+            url: url,
+            form: data
+        }, function (err, resp, body) {
+            self.sendResponse(id, err, resp, body);
+        })
+    }
 
-                // req.on('error', function(e) {
-                //   console.log('problem with request: ' + e.message);
-                // });
+    sendResponse(id, err, resp, body) {
+        let response = {
+            id: id,
+            protocol: 'http',
+            data: {
+                err: err,
+                resp, resp,
+                body: body,
+            }
+        };
 
-                // // write data to request body
-                // req.write('{"string": "Hello, World"}');
-                // req.end();
+        try {
+            this.connection.send(JSON.stringify(response));
+        } catch (e) {
+        }
+    }
+}

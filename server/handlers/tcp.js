@@ -5,23 +5,23 @@ module.exports = class TcpConnection {
         var self = this;
 
         self.connection = connection
-        self.id   = id;
+        self.id = id;
         self.host = host;
         self.port = port;
         self.is_connected = false;
         self.socket = new net.Socket();
 
-        self.socket.connect(self.port, self.host, function() {
+        self.socket.connect(self.port, self.host, function () {
             self.is_connected = true;
             self.sendResponse('connect');
         });
 
-        self.socket.on('close', function() {
+        self.socket.on('close', function () {
             self.is_connected = false;
             self.sendResponse('close');
         });
 
-        self.socket.on('data', function(data) {
+        self.socket.on('data', function (data) {
             self.sendResponse('data', data);
         });
     }
@@ -43,11 +43,12 @@ module.exports = class TcpConnection {
         this.socket.write(data + '\r\n');
     }
 
-    sendResponse(event, data){
+    sendResponse(event, data) {
         data = data || null;
 
         let response = {
             id: this.id,
+            protocol: 'tcp',
             event: event,
             data: data,
         };

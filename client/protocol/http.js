@@ -1,30 +1,36 @@
-// module.exports = class {
-//   constructor(client) {
-//     this.client = client;
-//   }
+module.exports = class {
+    constructor(connection) {
+        this.connection = connection;
+    }
 
-//   get(url, cb) {
-//     var msg = {
-//         protocol: 'http',
-//         method: 'GET',
-//         params: {
-//             url: url
-//         }
-//     }
+    get(url, cb) {
+        var msg = {
+            id: this.connection.generateId(),
+            protocol: 'http',
+            method: 'get',
+            params: {
+                url: url
+            }
+        }
 
-//     this.client.sendRequestToServer(msg, cb);
-//   }
+        this.connection.sendRequestToServer(msg, function (response) {
+            cb(response.data.err, response.data.resp, response.data.body);
+        });
+    }
 
-//   post(url, params, cb) {
-//     var msg = {
-//         protocol: 'http',
-//         method: 'POST',
-//         params: {
-//             url: url,
-//             params: params
-//         }
-//     }
+    post(url, data, cb) {
+        var msg = {
+            id: this.connection.generateId(),
+            protocol: 'http',
+            method: 'post',
+            params: {
+                url: url,
+                data: data
+            }
+        }
 
-//     this.client.sendRequestToServer(msg, cb);
-//   }
-// }
+        this.connection.sendRequestToServer(msg, function (response) {
+            cb(response.data.err, response.data.resp, response.data.body);
+        });
+    }
+}
