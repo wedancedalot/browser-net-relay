@@ -1,3 +1,3 @@
 var Relay = require('../index.js');
 
-var server = new Relay.Server(8080);
+var server = new Relay.Server();

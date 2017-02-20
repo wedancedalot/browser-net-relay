@@ -1,4 +1,5 @@
 let TcpConnection = require('./protocol/tcp.js');
+let UdpConnection = require('./protocol/udp.js');
 let HttpConnection = require('./protocol/http.js');
 
 module.exports = class {
@@ -41,6 +42,12 @@ module.exports = class {
             connection: this,
             host: host,
             port: port,
+        });
+    }
+
+    udpSocket(){
+        return new UdpConnection({
+            connection: this
         });
     }
 

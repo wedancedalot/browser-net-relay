@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/wedancedalot/browser-net-relay#readme",
   "dependencies": {
+    "debug": "^2.6.1",
     "request": "^2.79.0",
     "ws": "^2.0.3"
   },

@@ -18,11 +18,35 @@ Relay.Connect('localhost', 8080, function (conn) {
     //     console.log(data);
     // });
 
-    conn.http.get('https://wedancedalot.github.io', function (err, resp, body) {
-        console.log(body);
-    });
+    // conn.http.get('https://wedancedalot.github.io', function (err, resp, body) {
+    //     console.log(body);
+    // });
 
     // conn.http.post('https://wedancedalot.github.io', {test: 1}, function (err, resp, body) {
     //     console.log(resp);
     // });
+
+    var udp = conn.udpSocket();
+
+    // udp.on('error', (err) => {
+    //     console.log(`server error:\n${err.stack}`);
+    //     sudpclose();
+    // });
+    //
+    // udp.on('message', (msg, rinfo) => {
+    //     console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
+    // });
+    //
+    // udp.on('listening', () => {
+    //     var address = sudpaddress();
+    //     console.log(`server listening ${address.address}:${address.port}`);
+    // });
+    //
+    // udp.bind(41234);
+
+    // TODO: not working. Replace with buffer maybe
+    var buf1 = Buffer.from('Some asdasdad');
+    udp.send(buf1, 2710, 'shubt.net', (err) => {
+        console.log(err)
+    });
 });
