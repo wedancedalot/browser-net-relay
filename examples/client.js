@@ -1,6 +1,6 @@
-let Relay = require('../index.js');
+const RelayClient = require('../client/index.js');
 
-Relay.Connect('localhost', 8080, function (conn) {
+RelayClient('localhost', 8080, function (conn) {
     // var tcp = conn.newTcpConnection('127.0.0.1', 6379);
     // tcp.on('connect', function(){
     //     // We can send data here or close a connection
@@ -26,29 +26,34 @@ Relay.Connect('localhost', 8080, function (conn) {
     //     console.log(resp);
     // });
 
+
     var udp = conn.udpSocket();
+    udp.bind(65511);
 
-    
+    udp.on('close', () => {
+        console.log('close');
+    });
 
-    // Client example
+    udp.on('error', (err) => {
+        console.log('error', err);
+    });
+
+    udp.on('message', (msg, rinfo) => {
+        console.log('message', {
+            msg: msg,
+            rinfo: rinfo
+        });
+    });
+
+    udp.on('listening', () => {
+        let address = udp.address();
+        console.log('listening', address.address, address.port);
+    });
+
     var buf1 = Buffer.from('Some asdasdad');
-    udp.send(buf1, 2710, 'shubt.net', (err) => {
+    udp.send(buf1, 0, buf1.length, 2710, 'shubt.net', (err) => {
         console.log(err)
+        udp.close()
     });
-    
-    // Server example
-    udp.bind();
-    
-    udp.on('error', (a) => {
-        console.log(a);
-    });
-    
-    udp.on('message', (a) => {
-        console.log(a);
-    });
-    
-    udp.on('listening', (a) => {
-        console.log(a);
-    });
-    
 });
+

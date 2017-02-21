@@ -1,8 +1,9 @@
-let TcpConnection = require('./protocol/tcp.js');
-let UdpConnection = require('./protocol/udp.js');
-let HttpConnection = require('./protocol/http.js');
+const WebSocket = require('ws');
+const TcpConnection = require('./protocol/tcp.js');
+const UdpConnection = require('./protocol/udp.js');
+const HttpConnection = require('./protocol/http.js');
 
-module.exports = class {
+class Connection {
     constructor(params) {
         this.callbacks = {};
         this.ws = params.ws;
@@ -61,3 +62,20 @@ module.exports = class {
     }
 }
 
+module.exports = function (host, port, cb) {
+    let conn = new Connection({
+        ws: new WebSocket(['ws://', host, ':', port].join('')),
+    });
+
+    conn.ws.onopen = () => {
+        cb(conn);
+    }
+
+    // TODO: disconnection error handling
+
+    // conn.ws.onclose = function(e) {
+    // };
+
+    // conn.ws.onerror = function(error) {
+    // };
+};

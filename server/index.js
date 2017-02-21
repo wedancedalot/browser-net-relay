@@ -1,7 +1,7 @@
 let WebSocket = require('ws');
 let HttpHandler = require('./handlers/http.js');
 let TcpHandler = require('./handlers/tcp.js');
-let dgram = require('dgram');
+let UdpHandler = require('./handlers/udp.js');
 var debug = require('debug')('browser-net-relay:server')
 
 module.exports = class Server {
@@ -80,89 +80,44 @@ module.exports = class Server {
                     break;
 
                 case 'udp':
-                    let udp = dgram.createSocket('udp4');
-
                     switch (request.method) {
-                        case 'write':
-                            let buffer = new Buffer(request.params.data);
-                            udp.send(buffer, request.params.port, request.params.host, (err) => {
-                                let response = {
-                                    id: request.id,
-                                    protocol: 'udp',
-                                    data: {
-                                        err: err
-                                    }
-                                };
-
-                                try {
-                                    conn.send(JSON.stringify(response));
-                                } catch (e) {
-                                    debug('Error sending response %j', e);
-                                }
-
-                                udp.close();
-                            });
+                        case 'create':
+                            var handle = new UdpHandler(conn, request.id);
+                            udp_connections[request.id] = handle;
 
                             break;
 
+                        case 'close':
+                            if (!(request.id in udp_connections)) {
+                                // TODO: return error message for callback
+                                console.error('Udp connection #' + request.id + ' was not established.');
+                                return;
+                            }
+
+                            udp_connections[request.id].close();
+
+                            delete(tcp_connections[request.id]);
+                            break;
+
                         case 'bind':
-                            udp.bind();
+                            if (!(request.id in udp_connections)) {
+                                // TODO: return error message for callback
+                                console.error('Udp connection #' + request.id + ' was not established.');
+                                return;
+                            }
 
-                            udp.on('error', (err) => {
-                                let response = {
-                                    id: request.id,
-                                    protocol: 'udp',
-                                    event: 'error',
-                                    data: {
-                                        err: err
-                                    }
-                                };
+                            udp_connections[request.id].bind(request.params);
 
-                                try {
-                                    conn.send(JSON.stringify(response));
-                                } catch (e) {
-                                    debug('Error sending response %j', e);
-                                }
+                            break;
 
-                                udp.close();
-                            });
+                        case 'send':
+                            if (!(request.socket in udp_connections)) {
+                                // TODO: return error message for callback
+                                console.error('Udp connection #' + request.socket + ' was not established.');
+                                return;
+                            }
 
-                            udp.on('message', (msg, rinfo) => {
-                                let response = {
-                                    id: request.id,
-                                    protocol: 'udp',
-                                    event: 'message',
-                                    data: {
-                                        msg: msg,
-                                        rinfo: rinfo
-                                    }
-                                };
-
-                                try {
-                                    conn.send(JSON.stringify(response));
-                                } catch (e) {
-                                    debug('Error sending response %j', e);
-                                }
-
-                                console.log(rinfo);
-                                console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
-                            });
-
-                            udp.on('listening', () => {
-                                let response = {
-                                    id: request.id,
-                                    event: 'listening',
-                                    protocol: 'udp',
-                                    data: udp.address()
-                                };
-
-                                try {
-                                    conn.send(JSON.stringify(response));
-                                } catch (e) {
-                                    debug('Error sending response %j', e);
-                                }
-                            });
-
+                            udp_connections[request.socket].send(request.id, request.params);
                             break;
                     }
 
@@ -174,11 +129,17 @@ module.exports = class Server {
             // Close any open TCP sockets
             for (conn in tcp_connections) {
                 tcp_connections[conn].close();
-                delete(tcp_connections[conn]);
             }
 
+            // Close all udp sockets
+            for (conn in udp_connections) {
+                udp_connections[conn].close();
+            }
+
+            tcp_connections = null;
+            udp_connections = null;
+
             // TODO: cancel all http requests
-            // TODO: close all udp sockets
         });
     }
 }

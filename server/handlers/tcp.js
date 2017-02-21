@@ -1,4 +1,4 @@
-let net = require('net');
+const net = require('net');
 
 module.exports = class TcpConnection {
     constructor(connection, id, host, port) {

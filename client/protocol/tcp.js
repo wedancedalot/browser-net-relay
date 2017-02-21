@@ -10,7 +10,7 @@ module.exports = class extends EventEmitter {
         self.host = params.host;
         self.port = params.port;
         self.id = self.connection.generateId(),
-            self.is_connected = false;
+        self.is_connected = false;
 
         // Let's try to connect
         var msg = {
@@ -35,7 +35,7 @@ module.exports = class extends EventEmitter {
                     self.emit('close');
 
                     // Remove callback
-                    delete(self.connection.callbacks[msg.id]);
+                    delete(self.connection.callbacks[self.id]);
 
                     break;
 
