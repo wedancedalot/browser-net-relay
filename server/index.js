@@ -80,12 +80,12 @@ module.exports = class Server {
                     break;
 
                 case 'udp':
-                    switch (request.method){
+                    let udp = dgram.createSocket('udp4');
+
+                    switch (request.method) {
                         case 'write':
-                            let udp = dgram.createSocket('udp4');
-                            var message = Buffer.from('Some bytes');
-                            console.log(message, request.params.data);
-                            udp.send(request.params.data, request.params.port, request.params.host, (err) => {
+                            let buffer = new Buffer(request.params.data);
+                            udp.send(buffer, request.params.port, request.params.host, (err) => {
                                 let response = {
                                     id: request.id,
                                     protocol: 'udp',
@@ -96,33 +96,75 @@ module.exports = class Server {
 
                                 try {
                                     conn.send(JSON.stringify(response));
-                                } catch (e){
+                                } catch (e) {
                                     debug('Error sending response %j', e);
                                 }
 
                                 udp.close();
                             });
-                            
+
+                            break;
+
+                        case 'bind':
+                            udp.bind();
+
+                            udp.on('error', (err) => {
+                                let response = {
+                                    id: request.id,
+                                    protocol: 'udp',
+                                    event: 'error',
+                                    data: {
+                                        err: err
+                                    }
+                                };
+
+                                try {
+                                    conn.send(JSON.stringify(response));
+                                } catch (e) {
+                                    debug('Error sending response %j', e);
+                                }
+
+                                udp.close();
+                            });
+
+                            udp.on('message', (msg, rinfo) => {
+                                let response = {
+                                    id: request.id,
+                                    protocol: 'udp',
+                                    event: 'message',
+                                    data: {
+                                        msg: msg,
+                                        rinfo: rinfo
+                                    }
+                                };
+
+                                try {
+                                    conn.send(JSON.stringify(response));
+                                } catch (e) {
+                                    debug('Error sending response %j', e);
+                                }
+
+                                console.log(rinfo);
+                                console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
+                            });
+
+                            udp.on('listening', () => {
+                                let response = {
+                                    id: request.id,
+                                    event: 'listening',
+                                    protocol: 'udp',
+                                    data: udp.address()
+                                };
+
+                                try {
+                                    conn.send(JSON.stringify(response));
+                                } catch (e) {
+                                    debug('Error sending response %j', e);
+                                }
+                            });
+
                             break;
                     }
-                    // udpSocket.bind();
-                    //
-                    // // request.id
-                    //
-                    // udpSocket.on('error', (err) => {
-                    //     console.log(`server error:\n${err.stack}`);
-                    //     udpSocket.close();
-                    // });
-                    //
-                    // udpSocket.on('message', (msg, rinfo) => {
-                    //     console.log(rinfo);
-                    //     console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
-                    // });
-                    //
-                    // udpSocket.on('listening', () => {
-                    //     var address = udpSocket.address();
-                    //     console.log(`server listening ${address.address}:${address.port}`);
-                    // });
 
                     break;
             }

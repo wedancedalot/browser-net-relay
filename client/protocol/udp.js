@@ -11,9 +11,9 @@ module.exports = class extends EventEmitter {
 
     send(data, port, host, cb) {
         var self = this;
-        
+
         var msg = {
-            id: this.id,
+            id: self.connection.generateId(),
             protocol: 'udp',
             method: 'write',
             params: {
@@ -26,6 +26,34 @@ module.exports = class extends EventEmitter {
         this.connection.sendRequestToServer(msg, function (response) {
             cb(response.data);
             delete(self.connection.callbacks[msg.id]);
+        });
+    }
+
+    bind() {
+        var self = this;
+
+        var msg = {
+            id: self.id,
+            protocol: 'udp',
+            method: 'bind',
+            params: {}
+        }
+
+        self.connection.sendRequestToServer(msg, function (response) {
+            switch (response.event) {
+                case 'error':
+                    self.emit('error', response.data);
+                    break;
+
+                case 'message':
+                    self.emit('message', response.data);
+
+                    break;
+
+                case 'listening':
+                    self.emit('listening', response.data);
+                    break;
+            }
         });
     }
 

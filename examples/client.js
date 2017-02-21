@@ -28,25 +28,27 @@ Relay.Connect('localhost', 8080, function (conn) {
 
     var udp = conn.udpSocket();
 
-    // udp.on('error', (err) => {
-    //     console.log(`server error:\n${err.stack}`);
-    //     sudpclose();
-    // });
-    //
-    // udp.on('message', (msg, rinfo) => {
-    //     console.log(`server got: ${msg} from ${rinfo.address}:${rinfo.port}`);
-    // });
-    //
-    // udp.on('listening', () => {
-    //     var address = sudpaddress();
-    //     console.log(`server listening ${address.address}:${address.port}`);
-    // });
-    //
-    // udp.bind(41234);
+    
 
-    // TODO: not working. Replace with buffer maybe
+    // Client example
     var buf1 = Buffer.from('Some asdasdad');
     udp.send(buf1, 2710, 'shubt.net', (err) => {
         console.log(err)
     });
+    
+    // Server example
+    udp.bind();
+    
+    udp.on('error', (a) => {
+        console.log(a);
+    });
+    
+    udp.on('message', (a) => {
+        console.log(a);
+    });
+    
+    udp.on('listening', (a) => {
+        console.log(a);
+    });
+    
 });
