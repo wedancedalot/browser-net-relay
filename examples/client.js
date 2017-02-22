@@ -7,12 +7,17 @@ RelayClient('localhost', 8080, function (conn) {
     //     tcp.write('monitor');
     //     // tcp.close();
     // });
-    //
+
     // tcp.on('close', function(){
     //     // Conn closed
     //     console.log('Close:');
     // });
-    //
+
+    // tcp.on('error', function(err){
+    //     // Conn closed
+    //     console.log(err);
+    // });
+
     // tcp.on('data', function(data){
     //     // Receive some data
     //     console.log(data);
@@ -27,33 +32,33 @@ RelayClient('localhost', 8080, function (conn) {
     // });
 
 
-    var udp = conn.udpSocket();
-    udp.bind(65511);
+    // var udp = conn.udpSocket();
+    // udp.bind(65511);
 
-    udp.on('close', () => {
-        console.log('close');
-    });
+    // udp.on('close', () => {
+    //     console.log('close');
+    // });
 
-    udp.on('error', (err) => {
-        console.log('error', err);
-    });
+    // udp.on('error', (err) => {
+    //     console.log('error', err);
+    // });
 
-    udp.on('message', (msg, rinfo) => {
-        console.log('message', {
-            msg: msg,
-            rinfo: rinfo
-        });
-    });
+    // udp.on('message', (msg, rinfo) => {
+    //     console.log('message', {
+    //         msg: msg,
+    //         rinfo: rinfo
+    //     });
+    // });
 
-    udp.on('listening', () => {
-        let address = udp.address();
-        console.log('listening', address.address, address.port);
-    });
+    // udp.on('listening', () => {
+    //     let address = udp.address();
+    //     console.log('listening', address.address, address.port);
+    // });
 
-    var buf1 = Buffer.from('Some asdasdad');
-    udp.send(buf1, 0, buf1.length, 2710, 'shubt.net', (err) => {
-        console.log(err)
-        udp.close()
-    });
+    // var buf1 = Buffer.from('Some asdasdad');
+    // udp.send(buf1, 0, buf1.length, 2710, 'shubt.net', (err) => {
+    //     console.log(err)
+    //     // udp.close()
+    // });
 });
 

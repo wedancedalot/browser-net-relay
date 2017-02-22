@@ -16,11 +16,6 @@ class Connection {
 
         if (response.id in this.callbacks) {
             this.callbacks[response.id].cb(response);
-
-            // Remove callback only for http methods
-            if (response.protocol == 'http') {
-                delete(this.callbacks[response.id]);
-            }
         }
     }
 

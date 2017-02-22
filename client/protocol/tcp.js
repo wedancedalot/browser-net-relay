@@ -42,6 +42,10 @@ module.exports = class extends EventEmitter {
                 case 'data':
                     self.emit('data', response.data);
                     break;
+
+                case 'error':
+                    self.emit('error', response.data);
+                    break;
             }
         });
     }

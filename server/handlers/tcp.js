@@ -11,6 +11,7 @@ module.exports = class TcpConnection {
         self.is_connected = false;
         self.socket = new net.Socket();
 
+
         self.socket.connect(self.port, self.host, function () {
             self.is_connected = true;
             self.sendResponse('connect');
@@ -23,6 +24,10 @@ module.exports = class TcpConnection {
 
         self.socket.on('data', function (data) {
             self.sendResponse('data', data);
+        });
+
+        self.socket.on('error', function(err) {
+            self.sendResponse('error', err);
         });
     }
 
