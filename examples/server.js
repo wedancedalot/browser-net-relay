@@ -1,3 +1,3 @@
-var Relay = require('../index.js');
+const RelayServer = require('../server/index.js');
 
-var server = new Relay.Server();
+var server = new RelayServer();

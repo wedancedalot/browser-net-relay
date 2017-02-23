@@ -4,6 +4,8 @@ module.exports = class {
     }
 
     get(url, cb) {
+        var self = this;
+
         var msg = {
             id: this.connection.generateId(),
             protocol: 'http',
@@ -15,10 +17,13 @@ module.exports = class {
 
         this.connection.sendRequestToServer(msg, function (response) {
             cb(response.data.err, response.data.resp, response.data.body);
+            delete(self.connection.callbacks[response.id]);
         });
     }
 
     post(url, data, cb) {
+        var self = this;
+
         var msg = {
             id: this.connection.generateId(),
             protocol: 'http',
@@ -31,6 +36,7 @@ module.exports = class {
 
         this.connection.sendRequestToServer(msg, function (response) {
             cb(response.data.err, response.data.resp, response.data.body);
+            delete(self.connection.callbacks[response.id]);
         });
     }
 }

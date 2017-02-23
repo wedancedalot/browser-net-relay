@@ -1,4 +1,4 @@
-let net = require('net');
+const net = require('net');
 
 module.exports = class TcpConnection {
     constructor(connection, id, host, port) {
@@ -10,6 +10,7 @@ module.exports = class TcpConnection {
         self.port = port;
         self.is_connected = false;
         self.socket = new net.Socket();
+
 
         self.socket.connect(self.port, self.host, function () {
             self.is_connected = true;
@@ -23,6 +24,10 @@ module.exports = class TcpConnection {
 
         self.socket.on('data', function (data) {
             self.sendResponse('data', data);
+        });
+
+        self.socket.on('error', function(err) {
+            self.sendResponse('error', err);
         });
     }
 
